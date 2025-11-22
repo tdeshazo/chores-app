@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Chore Chart{% if kid_name %} - {{ kid_name }}{% endif %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-bar">
+      <div class="top-bar-row">
+        <h1>Chore Chart</h1>
+        {% if kid_name %}
+          <a class="back-link" href="{{ url_for('index') }}">All chores</a>
+        {% endif %}
+      </div>
+      {% if kid_name %}
+        <div class="kid-label">For {{ kid_name }}</div>
+      {% endif %}
+      <div class="date">Today: {{ today }}</div>
+      <p class="hint">Swipe ➡ to mark done, swipe ⬅ to skip</p>
+    </header>
+
+    {% if not kid_name %}
+      <div class="tab-strip" id="kid-tabs" data-kids='{{ kid_list|tojson }}'>
+        <!-- Tabs built by JS -->
+      </div>
+    {% endif %}
+
+    <main class="board">
+      <section class="board-section">
+        <div class="section-header">Current chores</div>
+        <div class="card-container" id="active-container">
+          {% if tasks %}
+            {% for task in tasks %}
+              <div
+                class="card {{ task.status }}"
+                data-task-id="{{ task.id }}"
+                data-status="{{ task.status }}"
+                data-kid="{{ task.kid }}"
+              >
+                <div class="card-kid">{{ task.kid }}</div>
+                <div class="card-title">{{ task.title }}</div>
+                <div class="card-status">
+                  <span class="status-label">
+                    {% if task.status == 'done' %}Done ✅
+                    {% elif task.status == 'skipped' %}Skipped ⏭
+                    {% else %}Pending ⏳
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+            {% endfor %}
+            <div class="empty-state" id="active-empty" hidden>No chores pending.</div>
+          {% else %}
+            <div class="empty-state" id="active-empty">
+              No chores assigned for {{ kid_name or "today" }}.
+            </div>
+          {% endif %}
+        </div>
+      </section>
+
+      <section class="board-section">
+        <div class="section-header">Completed / skipped</div>
+        <div class="card-container" id="completed-container">
+          <div class="empty-state" id="completed-empty">Nothing completed yet.</div>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </div>
+</body>
+</html>

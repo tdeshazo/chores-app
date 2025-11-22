@@ -1,0 +1,296 @@
+/* ==== Global reset-ish ==== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==== Page layout ==== */
+body {
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+  color: #e5e7eb;
+
+  display: flex;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top, #1d4ed8 0, transparent 55%),
+    radial-gradient(circle at bottom, #6b21a8 0, #020617 55%);
+}
+
+/* Just constrains the content to a "phone" column */
+.app-shell {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+}
+
+/* ==== Header / top bar ==== */
+.top-bar {
+  padding: 1rem 1.25rem 0.6rem;
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.top-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.top-bar h1 {
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.back-link {
+  color: #93c5fd;
+  font-size: 0.9rem;
+  text-decoration: none;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  background: rgba(59, 130, 246, 0.08);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.back-link:hover {
+  border-color: rgba(147, 197, 253, 0.7);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.kid-label {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: #c7d2fe;
+  letter-spacing: 0.02em;
+}
+
+.tab-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem 0;
+  overflow-x: auto;
+}
+
+.tab-button {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+  color: #e5e7eb;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.tab-button.active {
+  border-color: rgba(147, 197, 253, 0.8);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(99, 102, 241, 0.3));
+  color: #e0f2fe;
+}
+
+.tab-button:hover {
+  border-color: rgba(148, 163, 184, 0.7);
+}
+
+.date {
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: #9ca3af;
+}
+
+.hint {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+/* ==== Cards container ==== */
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding: 1rem 1rem 1.5rem;
+}
+
+.board-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.section-header {
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  padding-left: 0.2rem;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.empty-state {
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  border: 1px dashed rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+  color: #cbd5e1;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* ==== Card base ==== */
+.card {
+  background: radial-gradient(circle at top left, #1f2937, #020617);
+  border-radius: 1.1rem;
+  padding: 1rem 1.1rem 0.9rem;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(148, 163, 184, 0.25);
+  position: relative;
+  overflow: hidden;
+
+  touch-action: pan-y;
+  user-select: none;
+  transform-origin: center;
+  transition:
+    transform 0.2s ease-out,
+    opacity 0.2s ease-out,
+    box-shadow 0.2s ease-out,
+    background 0.2s ease-out;
+}
+
+.card.locked {
+  opacity: 0.9;
+}
+
+.card.is-hidden {
+  display: none;
+}
+
+/* subtle colored edge glow depending on status */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  pointer-events: none;
+}
+
+/* During drag */
+.card.dragging {
+  box-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(209, 213, 219, 0.3);
+}
+
+/* ==== Card content ==== */
+
+.card-kid {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: #9ca3af;
+  margin-bottom: 0.35rem;
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.65rem;
+}
+
+.card-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Status pill */
+.status-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+/* ==== Status color schemes ==== */
+
+.card.pending::before {
+  border-color: rgba(250, 204, 21, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.08);
+}
+.card.pending .status-label {
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.6);
+  background: linear-gradient(
+    135deg,
+    rgba(24, 24, 27, 0.95),
+    rgba(30, 64, 175, 0.9)
+  );
+}
+
+.card.done::before {
+  border-color: rgba(34, 197, 94, 0.5);
+}
+.card.done .status-label {
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.8);
+  background: linear-gradient(
+    135deg,
+    rgba(6, 95, 70, 0.8),
+    rgba(5, 46, 22, 0.95)
+  );
+}
+
+.card.skipped::before {
+  border-color: rgba(248, 113, 113, 0.55);
+}
+.card.skipped .status-label {
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.85);
+  background: linear-gradient(
+    135deg,
+    rgba(127, 29, 29, 0.9),
+    rgba(15, 23, 42, 0.95)
+  );
+}
+
+/* When a card has flown out after swipe */
+.card.settled.done,
+.card.settled.skipped {
+  opacity: 0;
+}
+
+/* Small-screen tweaks */
+@media (min-width: 768px) {
+  body {
+    align-items: center;
+  }
+
+  .top-bar {
+    border-radius: 1.5rem 1.5rem 0.75rem 0.75rem;
+  }
+}
