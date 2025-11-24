@@ -1,6 +1,6 @@
-# Chore Chart
+# Chore Chart (Go + SQLite)
 
-Small Flask + SQLite app to track kids' daily chores with swipeable cards.
+Lightweight Go 1.25.1 + SQLite app to track kids' daily chores with swipeable cards.
 
 ## Features
 - Daily status tracking (pending/done/skipped) with animated swipe gestures.
@@ -10,17 +10,19 @@ Small Flask + SQLite app to track kids' daily chores with swipeable cards.
 
 ## Getting started
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install flask
-python app.py
+# Requires Go 1.25.1+
+go run ./cmd/server
 ```
 Then open http://localhost:5000.
 
-The database is presently created/seeded automatically on first run via `init_db()` in `app.py`. If you want a fresh start, delete `chores.db`.
+The database is created/seeded automatically on first run. Delete `chores.db` for a clean slate.
 
 ## Project layout
-- `app.py` — Flask app, routes, and DB init.
+- `cmd/server/main.go` — entrypoint wiring DB, templates, handlers, and static assets.
+- `internal/db/` — DB open/init/seed and queries.
+- `internal/handlers/` — HTML and JSON handlers.
+- `internal/models/` — task + view models.
+- `internal/web/` — template parsing with helpers.
 - `templates/index.html` — main template shared by all views.
 - `static/static.css` — styling.
 - `static/app.js` — swipe, restore, and kid-tab logic.
@@ -30,8 +32,7 @@ The database is presently created/seeded automatically on first run via `init_db
 - `POST /api/update_status` with JSON `{ "task_id": <int>, "status": "pending"|"done"|"skipped" }` updates today's status for that task.
 
 ## Notes
-- The app binds to `0.0.0.0:5000` in debug mode by default (see `app.py`).
-- For production, add a proper requirements file and run via a WSGI server (gunicorn, etc.).***
+- The app binds to `0.0.0.0:5000` by default (see `cmd/server/main.go`).
 
 ## Roadmap
 
