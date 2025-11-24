@@ -1,25 +1,31 @@
-# Byte-compiled / cache
-__pycache__/
-*.py[cod]
-*$py.class
+# Binaries for the current project
+*.exe
+*.dll
+*.so
+*.dylib
+*.wasm
 
-# Virtual environments
-.venv/
-venv/
-env/
-ENV/
-.Python
+# Build artifacts
+# Go build cache
+.cache/go-build/
+
+# IDE specific files
+.idea/
+.vscode/
+.DS_Store
+
+# Dependency caches
+vendor/ # If you are using Go Modules and vendoring dependencies
+
+# Test results
+*.test
+testdata/
+
+# Log files
+*.log
 
 # App data / local settings
 *.db
 *.sqlite3
 instance/
 .env
-
-# Logs
-*.log
-
-# Editors / OS
-.vscode/
-.idea/
-.DS_Store

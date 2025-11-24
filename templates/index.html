@@ -2,62 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Chore Chart{% if kid_name %} - {{ kid_name }}{% endif %}</title>
+  <title>Chore Chart{{if .KidName}} - {{.KidName}}{{end}}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
+  <link rel="stylesheet" href="/static/static.css">
 </head>
 <body>
   <div class="app-shell">
     <header class="top-bar">
       <div class="top-bar-row">
         <h1>Chore Chart</h1>
-        {% if kid_name %}
-          <a class="back-link" href="{{ url_for('index') }}">All chores</a>
-        {% endif %}
+        {{if .KidName}}
+          <a class="back-link" href="/">All chores</a>
+        {{end}}
       </div>
-      {% if kid_name %}
-        <div class="kid-label">For {{ kid_name }}</div>
-      {% endif %}
-      <div class="date">Today: {{ today }}</div>
+      {{if .KidName}}
+        <div class="kid-label">For {{.KidName}}</div>
+      {{end}}
+      <div class="date">Today: {{.Today}}</div>
       <p class="hint">Swipe ➡ to mark done, swipe ⬅ to skip</p>
     </header>
 
-    {% if not kid_name %}
-      <div class="tab-strip" id="kid-tabs" data-kids='{{ kid_list|tojson }}'>
+    {{if not .KidName}}
+      <div class="tab-strip" id="kid-tabs" data-kids='{{toJSON .KidList}}'>
         <!-- Tabs built by JS -->
       </div>
-    {% endif %}
+    {{end}}
 
     <main class="board">
       <section class="board-section">
         <div class="section-header">Current chores</div>
         <div class="card-container" id="active-container">
-          {% if tasks %}
-            {% for task in tasks %}
+          {{if .Tasks}}
+            {{range .Tasks}}
               <div
-                class="card {{ task.status }}"
-                data-task-id="{{ task.id }}"
-                data-status="{{ task.status }}"
-                data-kid="{{ task.kid }}"
+                class="card {{.Status}}"
+                data-task-id="{{.ID}}"
+                data-status="{{.Status}}"
+                data-kid="{{.Kid}}"
               >
-                <div class="card-kid">{{ task.kid }}</div>
-                <div class="card-title">{{ task.title }}</div>
+                <div class="card-kid">{{.Kid}}</div>
+                <div class="card-title">{{.Title}}</div>
                 <div class="card-status">
                   <span class="status-label">
-                    {% if task.status == 'done' %}Done ✅
-                    {% elif task.status == 'skipped' %}Skipped ⏭
-                    {% else %}Pending ⏳
-                    {% endif %}
+                    {{if eq .Status "done"}}Done ✅
+                    {{else if eq .Status "skipped"}}Skipped ⏭
+                    {{else}}Pending ⏳
+                    {{end}}
                   </span>
                 </div>
               </div>
-            {% endfor %}
+            {{end}}
             <div class="empty-state" id="active-empty" hidden>No chores pending.</div>
-          {% else %}
+          {{else}}
             <div class="empty-state" id="active-empty">
-              No chores assigned for {{ kid_name or "today" }}.
+              No chores assigned for {{if .KidName}}{{.KidName}}{{else}}today{{end}}.
             </div>
-          {% endif %}
+          {{end}}
         </div>
       </section>
 
@@ -69,7 +69,7 @@
       </section>
     </main>
 
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script src="/static/app.js"></script>
   </div>
 </body>
 </html>
